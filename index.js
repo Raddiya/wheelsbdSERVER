@@ -102,6 +102,16 @@ app.delete(`/user/:id`, async (req, res) => {
     res.send(result)
 })
 
+// admin
+
+app.put(`/user/:id`, async (req, res) => {
+    const updated = { $set: { role: "admin" } }
+    const id = req.params.id
+    const result = await userCollection.updateOne({ _id: ObjectId(id)
+}, updated, { upsert: true })
+    res.send(result)
+})
+
 
 
 
