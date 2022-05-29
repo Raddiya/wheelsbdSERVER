@@ -41,10 +41,10 @@ const run = async () => {
             const result = await cursor.toArray()
             res.send({ result });
         })
-        app.get('/myitems',jwtVerify, async (req, res) => {
-            const email =req.decoded.email;
+        app.get('/myitems', jwtVerify, async (req, res) => {
+            const email = req.decoded.email;
             console.log(email)
-            const cursor = productCollection.find({email})
+            const cursor = productCollection.find({ email })
             const result = await cursor.toArray()
             res.send({ result });
         })
@@ -60,11 +60,11 @@ const run = async () => {
             res.send({ result });
         })
         app.post('/login', async (req, res) => {
-            const {  email } = req.body;
-            const token = jwt.sign({ email },  process.env.TOKEN_SECRATE,{
-                expiresIn:'1d'
+            const { email } = req.body;
+            const token = jwt.sign({ email }, process.env.TOKEN_SECRATE, {
+                expiresIn: '1d'
             });
-            res.send({token});
+            res.send({ token });
         })
         app.delete('/product/:id', async (req, res) => {
             const id = req.params.id;
@@ -79,89 +79,99 @@ const run = async () => {
         })
 
 
+        // jwt token
+        app.post('/jwt-generator', async (req, res) => {
+            const email = req.body.email
+            const result = await userCollection.findOne({ email })
+            console.log(result)
+            const token = jwt.sign({ email, role: result?.role? result?.role : "user" }, process.env.TOKEN_SECRATE);
+            res.send(token)
+        })
 
 
 
+        //    =========================user===============
+        app.put(`/user`, async (req, res) => {
 
-//    =========================user===============
-app.put(`/user`, async (req, res) => {
+            const email = req.body.email
 
-    const email = req.body.email
+            const filter = { email }
+            const updated = { $set: { email } }
+            const itemUpdated = await userCollection.updateOne(filter, updated, { upsert: true })
+            res.send(itemUpdated)
+        })
+        app.get(`/users`, async (req, res) => {
+            const result = await userCollection.find().toArray()
+            res.send(result)
+        })
 
-    const filter = { email }
-    const updated = { $set: { email } }
-    const itemUpdated = await userCollection.updateOne(filter, updated, { upsert: true })
-    res.send(itemUpdated)
-})
-app.get(`/users`, async (req, res) => {
-    const result = await userCollection.find().toArray()
-    res.send(result)
-})
+        app.delete(`/user/:id`, async (req, res) => {
+            const id = req.params.id
+            const result = await userCollection.deleteOne({
+                _id: ObjectId(id)
+            })
+            res.send(result)
+        })
 
-app.delete(`/user/:id`, async (req, res) => {
-    const id = req.params.id
-    const result = await userCollection.deleteOne({ _id: ObjectId(id)
-})
-    res.send(result)
-})
+        // admin
 
-// admin
-
-app.put(`/user/:id`, async (req, res) => {
-    const updated = { $set: { role: "admin" } }
-    const id = req.params.id
-    const result = await userCollection.updateOne({ _id: ObjectId(id)
-}, updated, { upsert: true })
-    res.send(result)
-})
-
-
-  // ==================review=======================
-
-  app.post('/review', async (req, res) => {
-
-    const { review, userName, email } = req.body
-    const newReview = { userName, review, email }
-    const insert = await reviewCollection.insertOne(newReview)
-    if (insert) {
-        res.status(200).send(insert)
-    }
+        app.put(`/user/:id`, async (req, res) => {
+            const updated = { $set: { role: "admin" } }
+            const id = req.params.id
+            const result = await userCollection.updateOne({
+                _id: ObjectId(id)
+            }, updated, { upsert: true })
+            res.send(result)
+        })
 
 
-})
+        // ==================review=======================
 
-app.get(`/review`, async (req, res) => {
-    const limit = req.query.limit || 100
-    const result = await reviewCollection.find().sort({ _id: -1 }).limit(parseInt(limit)).toArray()
-    res.send(result)
-})
+        app.post('/review', async (req, res) => {
+
+            const { review, userName, email } = req.body
+            const newReview = { userName, review, email }
+            const insert = await reviewCollection.insertOne(newReview)
+            if (insert) {
+                res.status(200).send(insert)
+            }
 
 
-// ==============order=================================
+        })
 
-app.get('/orders', async (req, res) => {
+        app.get(`/review`, async (req, res) => {
+            const limit = req.query.limit || 100
+            const result = await reviewCollection.find().sort({ _id: -1 }).limit(parseInt(limit)).toArray()
+            res.send(result)
+        })
 
-    const query = {}
-    const cursor = orderCollection.find(query)
-    const result = await cursor.toArray()
-    res.status(200).send(result)
 
-})
+        // ==============order=================================
 
-app.post('/orders', async (req, res) => {
-    const result = await orderCollection.insertOne(req.body)
-    res.send(result)
+        app.get('/orders', async (req, res) => {
 
-})
+            const query = {}
+            const cursor = orderCollection.find(query)
+            const result = await cursor.toArray()
+            res.status(200).send(result)
 
-app.delete('/orders/:id', async (req, res) => {
-    const id = req.params.id
-    const query = {}
-    const result = await orderCollection.deleteOne({ _id: ObjectId(id)
-})
-    res.status(200).send(result)
+        })
 
-})
+        app.post('/orders', async (req, res) => {
+            const result = await orderCollection.insertOne(req.body)
+            res.send(result)
+
+        })
+
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id
+            const query = {}
+            const result = await orderCollection.deleteOne({
+                _id: ObjectId(id)
+            })
+            res.status(200).send(result)
+
+        })
 
 
 
