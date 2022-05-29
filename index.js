@@ -151,7 +151,14 @@ app.post('/orders', async (req, res) => {
 
 })
 
+app.delete('/orders/:id', async (req, res) => {
+    const id = req.params.id
+    const query = {}
+    const result = await orderCollection.deleteOne({ _id: ObjectId(id)
+})
+    res.status(200).send(result)
 
+})
 
 
 
