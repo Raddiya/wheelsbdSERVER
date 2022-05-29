@@ -113,6 +113,21 @@ app.put(`/user/:id`, async (req, res) => {
 })
 
 
+  // ==================review=======================
+
+  app.post('/review', async (req, res) => {
+
+    const { review, userName, email } = req.body
+    const newReview = { userName, review, email }
+    const insert = await reviewCollection.insertOne(newReview)
+    if (insert) {
+        res.status(200).send(insert)
+    }
+
+
+})
+
+
 
 
 
