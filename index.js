@@ -22,6 +22,7 @@ const jwtVerify = async (req, res, next) => {
         next()
     })
 }
+
 const run = async () => {
 
     const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.bhhzy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
@@ -88,7 +89,12 @@ const run = async () => {
             res.send(token)
         })
 
-
+        app.get('/jwt-decoded', jwtVerify, (req, res) => {
+            const decoded = req.decoded
+        
+            res.send(decoded)
+            console.log(decoded)
+        })
 
         //    =========================user===============
         app.put(`/user`, async (req, res) => {
