@@ -145,7 +145,11 @@ app.get('/orders', async (req, res) => {
 
 })
 
+app.post('/orders', async (req, res) => {
+    const result = await orderCollection.insertOne(req.body)
+    res.send(result)
 
+})
 
 
 
