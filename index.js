@@ -29,31 +29,34 @@ const run = async () => {
     try {
         const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
         await client.connect()
-        const phoneCollection = client.db("inventory").collection("phone");
+        const productCollection = client.db("bike").collection("product");
+        const userCollection = client.db("bike").collection("user");
+        const orderCollection = client.db("bike").collection("order");
+        const reviewCollection = client.db("bike").collection("review");
 
         console.log('database connect')
 
         app.get('/products', async (req, res) => {
-            const cursor = phoneCollection.find()
+            const cursor = productCollection.find()
             const result = await cursor.toArray()
             res.send({ result });
         })
         app.get('/myitems',jwtVerify, async (req, res) => {
             const email =req.decoded.email;
             console.log(email)
-            const cursor = phoneCollection.find({email})
+            const cursor = productCollection.find({email})
             const result = await cursor.toArray()
             res.send({ result });
         })
         app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
-            const result = await phoneCollection.findOne({ _id: ObjectId(id) })
+            const result = await productCollection.findOne({ _id: ObjectId(id) })
             res.send({ result });
         })
         app.post('/products', async (req, res) => {
             const { name, about, image, price, quantity, email, supplier } = req.body;
 
-            const result = await phoneCollection.insertOne({ name, about, image, price, quantity, email, supplier })
+            const result = await productCollection.insertOne({ name, about, image, price, quantity, email, supplier })
             res.send({ result });
         })
         app.post('/login', async (req, res) => {
@@ -65,13 +68,13 @@ const run = async () => {
         })
         app.delete('/product/:id', async (req, res) => {
             const id = req.params.id;
-            const result = await phoneCollection.deleteOne({ _id: ObjectId(id) })
+            const result = await productCollection.deleteOne({ _id: ObjectId(id) })
             res.send({ result });
         })
         app.put('/product/:id', async (req, res) => {
             const id = req.params.id;
             const quantity = req.body.quantity;
-            const result = await phoneCollection.updateOne({ _id: ObjectId(id) }, { $set: { quantity } }, { upsert: true })
+            const result = await productCollection.updateOne({ _id: ObjectId(id) }, { $set: { quantity } }, { upsert: true })
             res.send({ result });
         })
 
