@@ -95,6 +95,13 @@ app.get(`/users`, async (req, res) => {
     res.send(result)
 })
 
+app.delete(`/user/:id`, async (req, res) => {
+    const id = req.params.id
+    const result = await userCollection.deleteOne({ _id: ObjectId(id)
+})
+    res.send(result)
+})
+
 
 
 
