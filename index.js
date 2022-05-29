@@ -127,6 +127,12 @@ app.put(`/user/:id`, async (req, res) => {
 
 })
 
+app.get(`/review`, async (req, res) => {
+    const limit = req.query.limit || 100
+    const result = await reviewCollection.find().sort({ _id: -1 }).limit(parseInt(limit)).toArray()
+    res.send(result)
+})
+
 
 
 
