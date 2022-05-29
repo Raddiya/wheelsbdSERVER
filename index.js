@@ -134,6 +134,18 @@ app.get(`/review`, async (req, res) => {
 })
 
 
+// ==============order=================================
+
+app.get('/orders', async (req, res) => {
+
+    const query = {}
+    const cursor = orderCollection.find(query)
+    const result = await cursor.toArray()
+    res.status(200).send(result)
+
+})
+
+
 
 
 
