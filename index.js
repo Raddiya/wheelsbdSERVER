@@ -42,6 +42,11 @@ const run = async () => {
             const result = await cursor.toArray()
             res.send({ result });
         })
+        app.get('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await productCollection.findOne({ _id: ObjectId(id) })
+            res.send({ result });
+        })
         app.get('/myitems', jwtVerify, async (req, res) => {
             const email = req.decoded.email;
             console.log(email)
@@ -49,15 +54,17 @@ const run = async () => {
             const result = await cursor.toArray()
             res.send({ result });
         })
-        app.get('/product/:id', async (req, res) => {
-            const id = req.params.id;
-            const result = await productCollection.findOne({ _id: ObjectId(id) })
-            res.send({ result });
-        })
+       
         app.post('/products', async (req, res) => {
             const { name, about, image, price, quantity, email, supplier } = req.body;
 
             const result = await productCollection.insertOne({ name, about, image, price, quantity, email, supplier })
+            res.send({ result });
+        })
+        
+        app.delete('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await productCollection.deleteOne({ _id: ObjectId(id) })
             res.send({ result });
         })
         app.post('/login', async (req, res) => {
@@ -67,11 +74,7 @@ const run = async () => {
             });
             res.send({ token });
         })
-        app.delete('/product/:id', async (req, res) => {
-            const id = req.params.id;
-            const result = await productCollection.deleteOne({ _id: ObjectId(id) })
-            res.send({ result });
-        })
+
         app.put('/product/:id', async (req, res) => {
             const id = req.params.id;
             const quantity = req.body.quantity;
