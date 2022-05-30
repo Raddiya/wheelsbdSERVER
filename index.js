@@ -61,12 +61,6 @@ const run = async () => {
             const result = await productCollection.insertOne({ name, about, image, price, quantity, email, supplier })
             res.send({ result });
         })
-        
-        app.delete('/product/:id', async (req, res) => {
-            const id = req.params.id;
-            const result = await productCollection.deleteOne({ _id: ObjectId(id) })
-            res.send({ result });
-        })
         app.post('/login', async (req, res) => {
             const { email } = req.body;
             const token = jwt.sign({ email }, process.env.TOKEN_SECRATE, {
@@ -74,6 +68,12 @@ const run = async () => {
             });
             res.send({ token });
         })
+        app.delete('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await productCollection.deleteOne({ _id: ObjectId(id) })
+            res.send({ result });
+        })
+        
 
         app.put('/product/:id', async (req, res) => {
             const id = req.params.id;
