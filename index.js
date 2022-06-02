@@ -50,11 +50,11 @@ const run = async () => {
         app.get('/myitems', jwtVerify, async (req, res) => {
             const email = req.decoded.email;
             console.log(email)
-            const cursor = productCollection.find({ email })
+            const cursor = orderCollection.find({ email })
             const result = await cursor.toArray()
             res.send({ result });
         })
-       
+
         app.post('/products', async (req, res) => {
             const { name, about, image, price, quantity, email, supplier } = req.body;
 
@@ -73,7 +73,7 @@ const run = async () => {
             const result = await productCollection.deleteOne({ _id: ObjectId(id) })
             res.send({ result });
         })
-        
+
 
         app.put('/product/:id', async (req, res) => {
             const id = req.params.id;
@@ -88,13 +88,13 @@ const run = async () => {
             const email = req.body.email
             const result = await userCollection.findOne({ email })
             console.log(result)
-            const token = jwt.sign({ email, role: result?.role? result?.role : "user" }, process.env.TOKEN_SECRATE);
+            const token = jwt.sign({ email, role: result?.role ? result?.role : "user" }, process.env.TOKEN_SECRATE);
             res.send(token)
         })
 
         app.get('/jwt-decoded', jwtVerify, (req, res) => {
             const decoded = req.decoded
-        
+
             res.send(decoded)
             console.log(decoded)
         })
@@ -160,6 +160,14 @@ const run = async () => {
         app.get('/orders', async (req, res) => {
 
             const query = {}
+            const cursor = orderCollection.find(query)
+            const result = await cursor.toArray()
+            res.status(200).send(result)
+
+        })
+        app.get('/userOrders', jwtVerify, async (req, res) => {
+            const email = req.decoded.email
+            const query = { email }
             const cursor = orderCollection.find(query)
             const result = await cursor.toArray()
             res.status(200).send(result)
